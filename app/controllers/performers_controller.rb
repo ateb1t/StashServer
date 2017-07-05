@@ -4,10 +4,16 @@ class PerformersController < ApplicationController
   before_action :set_performer, only: [:show, :edit, :update, :image]
 
   def index
+    if params[:all]
+      params[:page] = 1
+      params[:per_page] = Performer.count
+    end
+
     whitelist = params.slice(:filter_favorites)
     @performers = Performer
                     .search_for(params[:q])
                     .filter(whitelist)
+                    .reorder(sort_column + ' ' + sort_direction)
                     .page(params[:page])
                     .per(params[:per_page])
   end
@@ -69,5 +75,13 @@ class PerformersController < ApplicationController
         @performer.image = File.read(params[:image_path])
         @performer.checksum = checksum
       end
+    end
+
+    def sort_direction
+      %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
+    end
+
+    def sort_column
+      Performer.column_names.include?(params[:sort]) ? params[:sort] : 'name'
     end
 end
