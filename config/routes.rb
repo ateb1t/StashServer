@@ -17,13 +17,15 @@ Rails.application.routes.draw do
 
   resources :studios, only: [:index, :show, :new, :create]
 
-  resources :tags, only: [:index, :new, :create]
+  resources :tags, only: [:index, :new, :show, :create]
 
   get 'search', to: 'stash#search', defaults: { format: :json }, as: :search
 
   post 'graphql', to: 'stash#graphql'
 
   root to: 'stash#dashboard'
+
+  match '*path', via: [:options], to:  lambda {|_| [204, {'Content-Type' => 'text/plain'}, []]}
 
   if Rails.env.development?
     mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"

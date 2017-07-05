@@ -1,8 +1,13 @@
 class TagsController < ApplicationController
-  before_action :set_tag, only: []
+  before_action :set_tag, only: [:show]
 
   def index
-    @tags = Tag.all
+    @tags = Tag.search_for(params[:q])
+               .page(params[:page])
+               .per(params[:per_page])
+  end
+
+  def show
   end
 
   def new

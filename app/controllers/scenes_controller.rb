@@ -1,4 +1,6 @@
 class ScenesController < ApplicationController
+  # wrap_parameters :scene, include: [:performer_ids, :tag_ids]
+
   before_action :set_scene, only: [:show, :edit, :update, :stream, :screenshot, :preview, :vtt, :chapter_vtt, :playlist]
   before_action :split_commas, only: [:update]
 
@@ -28,8 +30,10 @@ class ScenesController < ApplicationController
     respond_to do |format|
       if @scene.save
         format.html { redirect_to @scene, notice: 'Scene was successfully updated.' }
+        format.json { render json: {errors: []}, status: :ok, success: true }
       else
         format.html { render :edit }
+        format.json { render json: {errors: @scene.errors.to_a}, status: :ok, success: true }
       end
     end
   end
@@ -117,6 +121,8 @@ class ScenesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def scene_params
+      params[:scene][:tag_ids] = params[:scene][:tag_ids].first if params[:scene][:tag_ids].first.is_a?(Array)
+      params[:scene][:performer_ids] = params[:scene][:performer_ids].first if params[:scene][:performer_ids].first.is_a?(Array)
       params.fetch(:scene).permit(:title, :details, :url, :date, :rating, :studio_id, performer_ids: [], tag_ids: [])
     end
 
