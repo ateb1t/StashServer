@@ -20,6 +20,22 @@ class Scene < ApplicationRecord
       where missing.first.to_sym => nil
     end
   }
+  scope :resolution, -> (resolution) {
+    resolution = resolution.first if resolution.is_a?(Array)
+    if resolution == '240p'
+      where('height >= 240 AND height < 480')
+    elsif resolution == '480p'
+      where('height >= 480 AND height < 720')
+    elsif resolution == '720p'
+      where('height >= 720 AND height < 1080')
+    elsif resolution == '1080p'
+      where('height >= 1080 AND height < 2160')
+    elsif resolution == '4k'
+      where('height >= 2160')
+    else
+      where('height < 240')
+    end
+  }
 
   scope :missing_gallery, -> () { joins('LEFT OUTER JOIN galleries ON galleries.ownable_id = scenes.id').where('galleries.ownable_id IS NULL') }
 

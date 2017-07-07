@@ -5,7 +5,7 @@ class ScenesController < ApplicationController
   before_action :split_commas, only: [:update]
 
   def index
-    whitelist = params.slice(:filter_studios, :filter_performers, :filter_tags, :filter_rating, :filter_missing)
+    whitelist = params.slice(:filter_studios, :filter_performers, :filter_tags, :filter_rating, :filter_missing, :resolution)
     @scenes = Scene
                 .search_for(params[:q])
                 .filter(whitelist)
